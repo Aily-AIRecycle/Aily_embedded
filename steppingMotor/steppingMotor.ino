@@ -1,18 +1,23 @@
+#include <SoftwareSerial.h>
 #include <HCMotor.h>
 
 #define DIR_PIN 8     // Step motor driver DIR connection pin
 #define CLK_PIN 9     // Step motor driver CLK connection pin
 #define DIR_PIN2 7    // Step motor driver 2 DIR2 connection pin
 #define CLK_PIN2 6    // Step motor driver 2 CLK2 connection pin
+SoftwareSerial bluetooth(2, 3);
 
 /* Create HCMotor library instances */
 HCMotor HCMotor1;
 HCMotor HCMotor2;
 
-int Speed = 9;
+int Speed = 9; //10으로 올리면 더 느려짐
+
+String cmd;
 
 void setup()
 {
+  Serial.begin(9600);
   /* Library initialization */
   HCMotor1.Init();
   HCMotor2.Init();
@@ -26,21 +31,71 @@ void setup()
   /* Set the motors to continuous operation mode */
   HCMotor1.Steps(0, CONTINUOUS);
   HCMotor2.Steps(1, CONTINUOUS);
+  bluetooth.begin(9600);
 
-  /* Set speed for both motors */
-  HCMotor1.DutyCycle(0, Speed);
-  HCMotor2.DutyCycle(1, Speed);
 }
 
 void loop()
 {
-  /* Move both motors forward */
-  HCMotor1.Direction(0, FORWARD);
-  HCMotor2.Direction(1, FORWARD);
-  delay(3000);
+  if (bluetooth.available()) {
 
-  /* Move both motors in reverse */
-  HCMotor1.Direction(0, REVERSE);
-  HCMotor2.Direction(1, REVERSE);
-  delay(3000);
+    Serial.write(bluetooth.read());
+
+  }
+
+  if (Serial.available()) {
+
+    bluetooth.write(Serial.read());
+
+  }
+
+  if (Serial.available())
+  {
+    cmd = Serial.readStringUntil('\n');
+    Serial.println(cmd);
+    
+    // if (cmd == "1")
+    // {
+    //   HCMotor1.DutyCycle(0, Speed);
+    //   HCMotor2.DutyCycle(1, Speed);
+    //   HCMotor1.Direction(0, FORWARD);     // 모터쪽으로 가는게 포워드임
+    //   HCMotor2.Direction(1, FORWARD);
+    //   delay(3000);
+    //   HCMotor1.DutyCycle(0, 0);
+    //   HCMotor2.DutyCycle(1, 0);
+    // }
+    // if (cmd == "2")
+    // {
+    //   HCMotor1.DutyCycle(0, Speed);
+    //   HCMotor2.DutyCycle(1, Speed);
+    //   HCMotor1.Direction(0, REVERSE);
+    //   HCMotor2.Direction(1, REVERSE);
+    //   delay(3000);
+    //   HCMotor1.DutyCycle(0, 0);
+    //   HCMotor2.DutyCycle(1, 0);
+    // }
+    // else
+    // {
+    //   HCMotor1.DutyCycle(0, 0);
+    //   HCMotor2.DutyCycle(1, 0);
+    //   delay(3000);
+    // }
+
+    // 레일 조정용 코드
+    if (cmd == "1")
+    {
+      HCMotor2.DutyCycle(1, Speed);
+      HCMotor2.Direction(1, FORWARD);
+    }
+    if (cmd == "2")
+    {
+      HCMotor2.DutyCycle(1, 0);
+
+    }
+    if (cmd == "3")
+    {
+      HCMotor2.DutyCycle(1, Speed);
+      HCMotor2.Direction(1, REVERSE);
+    }
+  }
 }
