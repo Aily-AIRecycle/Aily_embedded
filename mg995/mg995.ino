@@ -1,36 +1,83 @@
 #include <Servo.h>
+#include <SoftwareSerial.h>
+#define BT_RXD 7
+#define BT_TXD 6
+#define servoPin1 12
+#define servoPin2 13
 
-Servo mg995_1;  // Create a servo object for the first servo
-Servo mg995_2;  // Create a servo object for the second servo
+SoftwareSerial BtSerial(BT_TXD, BT_RXD);        // 블루투스 설정 BTSerial(Tx, Rx)
 
-const int servoPin1 = 12;  // Pin for the first servo
-const int servoPin2 = 13;  // Pin for the second servo
+Servo MG995_Left;  // Create a servo object for the left servo
+Servo MG995_Right;  // Create a servo object for the right servo
+
+String cmd;
 
 void setup()
 {
-  mg995_1.attach(servoPin1);
-  mg995_2.attach(servoPin2);
+  Serial.begin(9600);
+  BtSerial.begin(9600);
+  MG995_Left.attach(servoPin1);
+  MG995_Right.attach(servoPin2);
 }
 
 void loop()
 {
-  // Rotate both servos 90 degrees clockwise
-  mg995_1.write(0);    // Set the first servo position to the minimum angle (0 degrees)
-  mg995_2.write(0);    // Set the second servo position to the minimum angle (0 degrees)
-  delay(1000);         // Delay for servos to reach the positions
+  if (BtSerial.available())
+  {       
+    cmd = BtSerial.read();
+    Serial.println(cmd);
   
-  // Rotate both servos back to the original position (90 degrees)
-  mg995_1.write(90);   // Set the first servo position to the original angle (90 degrees)
-  mg995_2.write(90);   // Set the second servo position to the original angle (90 degrees)
-  delay(1000);         // Delay for servos to reach the positions
-
-  // Rotate both servos 90 degrees counterclockwise
-  mg995_1.write(180);  // Set the first servo position to the maximum angle (180 degrees)
-  mg995_2.write(180);  // Set the second servo position to the maximum angle (180 degrees)
-  delay(1000);         // Delay for servos to reach the positions
-  
-  // Rotate both servos back to the original position (90 degrees)
-  mg995_1.write(90);   // Set the first servo position to the original angle (90 degrees)
-  mg995_2.write(90);   // Set the second servo position to the original angle (90 degrees)
-  delay(1000);         // Delay for servos to reach the positions
+    if (cmd == "49")
+    {
+      MG995_Left.write(0);     //clockwise
+      MG995_Right.write(180);   //counter clockwise
+      delay(425);
+      MG995_Left.write(90);    //stop
+      MG995_Right.write(90);    //stop
+      delay(1000);
+      MG995_Left.write(180);   //counter clockwise
+      MG995_Right.write(0);     //clockwise
+      delay(425);
+      MG995_Left.write(90);    //stop
+      MG995_Right.write(90);    //stop
+      delay(1000);
+    }
+    else
+    {
+      MG995_Left.write(90);
+      MG995_Right.write(90);
+      delay(1000);
+    }
+  }
 }
+
+// #include <SoftwareSerial.h>
+
+
+// //블루투스모듈 HC-06(슬래이브만가능)으로 진행함 
+// //블루투스모듈 HC-05(슬래이브 마스터둘다가능)는 조금 코드가 다르다  
+// //HC-06 시리얼창에서 "line ending 없음" 설정할것
+
+// int Tx = 6; //전송 보내는핀  
+// int Rx = 7; //수신 받는핀
+
+// SoftwareSerial BtSerial(Tx,Rx);
+
+// void setup() {
+//   // put your setup code here, to run once:
+//   Serial.begin(9600);
+
+//   Serial.println("hello");
+//   BtSerial.begin(9600);
+  
+// }
+
+// void loop() {
+//   // put your main code here, to run repeatedly:
+//   if (BtSerial.available()) {       
+//     Serial.write(BtSerial.read());
+//   }
+//   if (Serial.available()) {         
+//     BtSerial.write(Serial.read());
+//   }
+// }
