@@ -81,17 +81,25 @@ void loop()
     // }
 
     // 레일 조정용 코드
-    if (cmd == "49")
+    if (cmd == "0")
     {
+      Serial.println("stop");
+      HCMotor1.DutyCycle(0, 0);
+      HCMotor2.DutyCycle(1, 0);
+    }
+    if (cmd == "1")
+    {
+      Serial.println("go forward");
+      HCMotor1.DutyCycle(0, Speed);
+      HCMotor1.Direction(0, FORWARD);
       HCMotor2.DutyCycle(1, Speed);
       HCMotor2.Direction(1, FORWARD);
     }
-    if (cmd == "50")
+    if (cmd == "2")
     {
-      HCMotor2.DutyCycle(1, 0);
-    }
-    if (cmd == "51")
-    {
+      Serial.println("go backward");
+      HCMotor1.DutyCycle(0, Speed);
+      HCMotor1.Direction(0, REVERSE);
       HCMotor2.DutyCycle(1, Speed);
       HCMotor2.Direction(1, REVERSE);
     }
