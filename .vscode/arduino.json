@@ -1,5 +1,0 @@
-{
-    "sketch": "rail/rail.ino",
-    "board": "arduino:avr:uno",
-    "port": "/dev/tty.usbmodem11101"
-}
