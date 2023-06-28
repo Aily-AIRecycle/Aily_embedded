@@ -10,3 +10,8 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+
+# .DSStore Files
+*/.DS_Store
+.DS_Store
