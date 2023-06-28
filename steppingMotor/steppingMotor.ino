@@ -1,17 +1,17 @@
 #include <SoftwareSerial.h>
 #include <HCMotor.h>
 
-#define DIR_PIN 8     // Step motor driver DIR connection pin
-#define CLK_PIN 9     // Step motor driver CLK connection pin
-#define DIR_PIN2 7    // Step motor driver 2 DIR2 connection pin
-#define CLK_PIN2 6    // Step motor driver 2 CLK2 connection pin
-SoftwareSerial bluetooth(2, 3);
+#define DIR_PIN 8               // Step motor driver DIR connection pin
+#define CLK_PIN 9               // Step motor driver CLK connection pin
+#define DIR_PIN2 7              // Step motor driver 2 DIR2 connection pin
+#define CLK_PIN2 6              // Step motor driver 2 CLK2 connection pin
+SoftwareSerial bluetooth(2, 3); // tx 2 rx 3
 
 /* Create HCMotor library instances */
 HCMotor HCMotor1;
 HCMotor HCMotor2;
 
-int Speed = 9; //10으로 올리면 더 느려짐
+int Speed = 9; // 10으로 올리면 더 느려짐
 
 String cmd;
 
@@ -32,28 +32,27 @@ void setup()
   HCMotor1.Steps(0, CONTINUOUS);
   HCMotor2.Steps(1, CONTINUOUS);
   bluetooth.begin(9600);
-
 }
 
 void loop()
 {
-  if (bluetooth.available()) {
+  if (bluetooth.available())
+  {
 
     Serial.write(bluetooth.read());
-
   }
 
-  if (Serial.available()) {
+  if (Serial.available())
+  {
 
     bluetooth.write(Serial.read());
-
   }
 
   if (Serial.available())
   {
     cmd = Serial.readStringUntil('\n');
     Serial.println(cmd);
-    
+
     // if (cmd == "1")
     // {
     //   HCMotor1.DutyCycle(0, Speed);
@@ -82,17 +81,16 @@ void loop()
     // }
 
     // 레일 조정용 코드
-    if (cmd == "1")
+    if (cmd == "49")
     {
       HCMotor2.DutyCycle(1, Speed);
       HCMotor2.Direction(1, FORWARD);
     }
-    if (cmd == "2")
+    if (cmd == "50")
     {
       HCMotor2.DutyCycle(1, 0);
-
     }
-    if (cmd == "3")
+    if (cmd == "51")
     {
       HCMotor2.DutyCycle(1, Speed);
       HCMotor2.Direction(1, REVERSE);

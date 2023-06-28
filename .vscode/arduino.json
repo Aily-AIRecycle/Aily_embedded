@@ -1,0 +1,5 @@
+{
+    "sketch": "compressor/compressor.ino",
+    "board": "arduino:avr:uno",
+    "port": "/dev/tty.usbmodem11201"
+}
