@@ -1,107 +1,125 @@
-#include <SoftwareSerial.h>
-#include <HCMotor.h>
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
-#define DIR_PIN 8               // Step motor driver DIR connection pin
-#define CLK_PIN 9               // Step motor driver CLK connection pin
-#define DIR_PIN2 7              // Step motor driver 2 DIR2 connection pin
-#define CLK_PIN2 6              // Step motor driver 2 CLK2 connection pin
-SoftwareSerial bluetooth(2, 3); // tx 2 rx 3
+#define dirPin1 2
+#define stepPin1 3
+#define dirPin2 4
+#define stepPin2 5
+#define secPerDis 16000 // 16 seconds per 15cm
 
-/* Create HCMotor library instances */
-HCMotor HCMotor1;
-HCMotor HCMotor2;
-
-int Speed = 9; // 10으로 올리면 더 느려짐
+RF24 radio(7, 8);
+const byte address[6] = "00001";
 
 String cmd;
+unsigned long t1, t2;
 
 void setup()
 {
   Serial.begin(9600);
-  /* Library initialization */
-  HCMotor1.Init();
-  HCMotor2.Init();
-
-  /* Set motor 1 as a stepper motor and specify the connected pins */
-  HCMotor1.attach(0, STEPPER, CLK_PIN, DIR_PIN);
-
-  /* Set motor 2 as a stepper motor and specify the connected pins */
-  HCMotor2.attach(1, STEPPER, CLK_PIN2, DIR_PIN2);
-
-  /* Set the motors to continuous operation mode */
-  HCMotor1.Steps(0, CONTINUOUS);
-  HCMotor2.Steps(1, CONTINUOUS);
-  bluetooth.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
+  // Declare pins as output:
+  pinMode(stepPin1, OUTPUT);
+  pinMode(dirPin1, OUTPUT);
+  pinMode(stepPin2, OUTPUT);
+  pinMode(dirPin2, OUTPUT);
 }
 
 void loop()
 {
-  if (bluetooth.available())
-  {
-
-    Serial.write(bluetooth.read());
-  }
-
-  if (Serial.available())
-  {
-
-    bluetooth.write(Serial.read());
-  }
-
   if (Serial.available())
   {
     cmd = Serial.readStringUntil('\n');
     Serial.println(cmd);
+    // 일반 = 1, 플라스틱 = 2, 캔 = 3
+    if (cmd == "1") // 일반
+    {
+      delay(9000); // 9초 대기 중 압축(Serial신호)
 
-    // if (cmd == "1")
-    // {
-    //   HCMotor1.DutyCycle(0, Speed);
-    //   HCMotor2.DutyCycle(1, Speed);
-    //   HCMotor1.Direction(0, FORWARD);     // 모터쪽으로 가는게 포워드임
-    //   HCMotor2.Direction(1, FORWARD);
-    //   delay(3000);
-    //   HCMotor1.DutyCycle(0, 0);
-    //   HCMotor2.DutyCycle(1, 0);
-    // }
-    // if (cmd == "2")
-    // {
-    //   HCMotor1.DutyCycle(0, Speed);
-    //   HCMotor2.DutyCycle(1, Speed);
-    //   HCMotor1.Direction(0, REVERSE);
-    //   HCMotor2.Direction(1, REVERSE);
-    //   delay(3000);
-    //   HCMotor1.DutyCycle(0, 0);
-    //   HCMotor2.DutyCycle(1, 0);
-    // }
-    // else
-    // {
-    //   HCMotor1.DutyCycle(0, 0);
-    //   HCMotor2.DutyCycle(1, 0);
-    //   delay(3000);
-    // }
+      const char rdcmd[] = "throw";
+      radio.write(&rdcmd, sizeof(rdcmd));
+      delay(2000); // 2초 대기 중 바닥 열림(RF신호)
+    }
+    else if (cmd == "2") // 플라스틱
+    {
+      delay(9000); // 9초 대기 중 압축(Serial신호)
 
-    // 레일 조정용 코드
-    if (cmd == "0")
-    {
-      Serial.println("stop");
-      HCMotor1.DutyCycle(0, 0);
-      HCMotor2.DutyCycle(1, 0);
+      t1 = millis();
+      digitalWrite(dirPin1, HIGH);
+      digitalWrite(dirPin2, HIGH);
+      while (1) // 이동
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 32000)
+          break;
+      }
+
+      const char rdcmd[] = "throw";
+      radio.write(&rdcmd, sizeof(rdcmd));
+      delay(2000); // 2초 대기 중 바닥 열림(RF신호)
+
+      digitalWrite(dirPin1, LOW);
+      digitalWrite(dirPin2, LOW);
+      while (1) // 복귀
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 32000)
+          break;
+      }
     }
-    if (cmd == "1")
+    else if (cmd == "3") // 캔
     {
-      Serial.println("go forward");
-      HCMotor1.DutyCycle(0, Speed);
-      HCMotor1.Direction(0, FORWARD);
-      HCMotor2.DutyCycle(1, Speed);
-      HCMotor2.Direction(1, FORWARD);
+      delay(9000); // 9초 대기 중 압축(Serial신호)
+
+      t1 = millis();
+      digitalWrite(dirPin1, HIGH);
+      digitalWrite(dirPin2, HIGH);
+      while (1) // 이동
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 64000)
+          break;
+      }
+
+      const char rdcmd[] = "throw";
+      radio.write(&rdcmd, sizeof(rdcmd));
+      delay(2000); // 2초 대기 중 바닥 열림(RF신호)
+
+      digitalWrite(dirPin1, LOW);
+      digitalWrite(dirPin2, LOW);
+      while (1) // 복귀
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 64000)
+          break;
+      }
     }
-    if (cmd == "2")
+    else
     {
-      Serial.println("go backward");
-      HCMotor1.DutyCycle(0, Speed);
-      HCMotor1.Direction(0, REVERSE);
-      HCMotor2.DutyCycle(1, Speed);
-      HCMotor2.Direction(1, REVERSE);
+      stop();
     }
   }
+}
+
+void go()
+{
+  digitalWrite(stepPin1, HIGH);
+  digitalWrite(stepPin2, HIGH);
+  delayMicroseconds(7);
+  digitalWrite(stepPin1, LOW);
+  digitalWrite(stepPin2, LOW);
+  delayMicroseconds(7);
+}
+
+void stop()
+{
+  digitalWrite(stepPin1, LOW);
+  digitalWrite(stepPin2, LOW);
 }

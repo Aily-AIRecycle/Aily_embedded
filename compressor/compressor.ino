@@ -1,6 +1,5 @@
 #include "mas001.h"
 #include "dmd150.h"
-#include <SoftwareSerial.h>
 
 MAS001 myShield;
 DMD150 myMotor;
