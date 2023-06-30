@@ -12,7 +12,7 @@ This repository contains the Arduino source code for the Aily Trash Sorter proje
   - [Installation](#installation)
   - [Usage](#usage)
   - [Code Files](#code-files)
-  - [Contributers](#contributers)
+  - [Contributors](#contributors)
   - [License](#license)
 
 ## Introduction
@@ -55,7 +55,7 @@ This repository includes the following code files:
 - `rf24-receive.ino`: Receives commands on the trash sorting system using the nRF24L01 radio module.
 - `tb6600.ino`: Controls the stepper motor for precise movement.
 
-## Contributers
+## Contributors
 
 - [Lee InHo](https://github.com/2inlee) - Project Manager, AIoT Device Architect, Embedded Developer
 - [Lee SangHoon](https://github.com/dltkdgns00) - AIoT Device Architect, Embedded Developer
