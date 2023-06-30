@@ -34,7 +34,7 @@ void loop()
         Serial.println(rdcmd);
         Serial.println("start");
 
-        if (rdcmd[0] == '1')
+        if (rdcmd[0] == 'throw')
         {
             Serial.println("go");
             MG995_Left.write(0);    // clockwise
