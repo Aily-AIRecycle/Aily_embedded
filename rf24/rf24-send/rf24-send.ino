@@ -25,10 +25,9 @@ void loop()
     cmd = Serial.readStringUntil('\n');
     if (cmd == "1")
     {
-      const char rdcmd[] = "1";
-      radio.write(&rdcmd, sizeof(rdcmd)); // 해당 메시지를 수신자에게 보냄
+      const char rdcmd = 't';
+      Serial.println(radio.write(&rdcmd, sizeof(rdcmd))); // 해당 메시지를 수신자에게 보냄
       Serial.println(rdcmd);
     }
   }
-  delay(1000);
 }

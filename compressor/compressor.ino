@@ -23,15 +23,16 @@ void loop()
 
     Serial.println("start");
 
-    if (cmd == "1")
+    if (cmd == "compress")
     {
       myMotor.rotation(val / 4);
       Serial.println("Go");
-    }
-    else if (cmd == "2")
-    {
+      delay(9000);
       myMotor.rotation(-val / 4);
       Serial.println("Back");
+      delay(7300);
+      myMotor.rotation(0);
+      Serial.println("Stop");
     }
     else if (cmd == "0")
     {

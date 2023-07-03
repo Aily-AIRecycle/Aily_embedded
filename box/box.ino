@@ -29,12 +29,12 @@ void loop()
 {
     if (radio.available())
     {
-        char rdcmd[32] = "";
+        char rdcmd;
         radio.read(&rdcmd, sizeof(rdcmd));
         Serial.println(rdcmd);
         Serial.println("start");
 
-        if (rdcmd[0] == 'throw')
+        if (rdcmd == 't')
         {
             Serial.println("go");
             MG995_Left.write(0);    // clockwise

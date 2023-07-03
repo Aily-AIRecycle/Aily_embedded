@@ -6,12 +6,12 @@
 #define stepPin1 3
 #define dirPin2 4
 #define stepPin2 5
-#define secPerDis 16000 // 16 seconds per 15cm
 
 RF24 radio(7, 8);
 const byte address[6] = "00001";
 
 String cmd;
+
 unsigned long t1, t2;
 
 void setup()
@@ -34,13 +34,15 @@ void loop()
   {
     cmd = Serial.readStringUntil('\n');
     Serial.println(cmd);
+
     // 일반 = 1, 플라스틱 = 2, 캔 = 3
     if (cmd == "1") // 일반
     {
       delay(9000); // 9초 대기 중 압축(Serial신호)
 
-      const char rdcmd[] = "throw";
+      const char rdcmd = 't';
       radio.write(&rdcmd, sizeof(rdcmd));
+      Serial.println("throw");
       delay(2000); // 2초 대기 중 바닥 열림(RF신호)
     }
     else if (cmd == "2") // 플라스틱
@@ -58,10 +60,11 @@ void loop()
           break;
       }
 
-      const char rdcmd[] = "throw";
+      const char rdcmd = 't';
       radio.write(&rdcmd, sizeof(rdcmd));
       delay(2000); // 2초 대기 중 바닥 열림(RF신호)
 
+      t1 = millis();
       digitalWrite(dirPin1, LOW);
       digitalWrite(dirPin2, LOW);
       while (1) // 복귀
@@ -87,10 +90,37 @@ void loop()
           break;
       }
 
-      const char rdcmd[] = "throw";
+      const char rdcmd = 't';
       radio.write(&rdcmd, sizeof(rdcmd));
       delay(2000); // 2초 대기 중 바닥 열림(RF신호)
 
+      t1 = millis();
+      digitalWrite(dirPin1, LOW);
+      digitalWrite(dirPin2, LOW);
+      while (1) // 복귀
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 64000)
+          break;
+      }
+    }
+    else if (cmd == "10")
+    {
+      t1 = millis();
+      digitalWrite(dirPin1, HIGH);
+      digitalWrite(dirPin2, HIGH);
+      while (1) // 복귀
+      {
+        t2 = millis();
+        go();
+        if ((t2 - t1) > 500)
+          break;
+      }
+    }
+    else if (cmd == "11")
+    {
+      t1 = millis();
       digitalWrite(dirPin1, LOW);
       digitalWrite(dirPin2, LOW);
       while (1) // 복귀

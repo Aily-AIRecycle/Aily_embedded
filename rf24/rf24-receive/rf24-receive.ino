@@ -17,7 +17,7 @@ void loop()
 {
     if (radio.available())
     {
-        char rdcmd[32] = "";
+        char rdcmd;
         radio.read(&rdcmd, sizeof(rdcmd));
         Serial.println(rdcmd);
     }
