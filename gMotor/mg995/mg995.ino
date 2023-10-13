@@ -32,8 +32,8 @@ void loop() {
     if (cmd == "start")
     {
       // 1번 모터는 정방향, 2번 모터는 역방향으로 회전
-      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, 255);
-      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, -255);
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, -255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, 255);
       delay(1400);
 
       // 두 모터를 동시에 정지
@@ -43,8 +43,8 @@ void loop() {
       delay(1000);
 
       // // 1번 모터는 역방향, 2번 모터는 정방향으로 회전
-      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, -255);
-      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, 255);
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, 255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, -255);
       delay(1400);
 
       // 두 모터를 동시에 정지
