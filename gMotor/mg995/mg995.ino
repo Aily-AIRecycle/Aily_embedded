@@ -29,7 +29,7 @@ void loop() {
   {
     cmd = Serial.readStringUntil('\n');
     Serial.println(cmd);
-    if (cmd == "start")
+    if (cmd == "1")
     {
       // 1번 모터는 정방향, 2번 모터는 역방향으로 회전
       rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, -255);
@@ -47,22 +47,67 @@ void loop() {
       rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, -255);
       delay(1400);
 
-      // 두 모터를 동시에 정지
-      // 올라온 상태에서는 딜레이를 길게줘서 올라온 뒤에 전원을 바로 뽑더라도 잔여전류로 인해 오버런이 발생하지 않게 조치함
       brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
       brake(IN1_PIN2, IN2_PIN2, PWM_PIN2);
-      delay(8000);
+      delay(1000);
+
     }
-    // 1번모터 미세조정용 finetunning
-    else if (cmd == "1")
+    
+    else if (cmd == "2")
+    {
+      delay(36000);
+      // 1번 모터는 정방향, 2번 모터는 역방향으로 회전
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, -255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, 255);
+      delay(1400);
+
+      // 두 모터를 동시에 정지
+      // 내려갔다가 멈추고 올라올 때의 멈추는 상태 : 딜레이를 짧게 줌
+      brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
+      brake(IN1_PIN2, IN2_PIN2, PWM_PIN2);
+      delay(1000);
+
+      // // 1번 모터는 역방향, 2번 모터는 정방향으로 회전
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, 255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, -255);
+      delay(1400);
+
+      brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
+      brake(IN1_PIN2, IN2_PIN2, PWM_PIN2);
+      delay(1000);
+    }
+    else if (cmd == "3")
+    {
+      delay(68000);
+      // 1번 모터는 정방향, 2번 모터는 역방향으로 회전
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, -255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, 255);
+      delay(1400);
+
+      // 두 모터를 동시에 정지
+      // 내려갔다가 멈추고 올라올 때의 멈추는 상태 : 딜레이를 짧게 줌
+      brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
+      brake(IN1_PIN2, IN2_PIN2, PWM_PIN2);
+      delay(1000);
+
+      // // 1번 모터는 역방향, 2번 모터는 정방향으로 회전
+      rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, 255);
+      rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, -255);
+      delay(1400);
+
+      brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
+      brake(IN1_PIN2, IN2_PIN2, PWM_PIN2);
+      delay(1000);
+
+    }
+    else if (cmd == "10")
     {
       rotation(IN1_PIN1, IN2_PIN1, PWM_PIN1, 255);
       delay(100);
       brake(IN1_PIN1, IN2_PIN1, PWM_PIN1);
       delay(1000);
     }
-    // 2번모터 미세조정용 finetunning
-    else if (cmd == "2")
+    else if (cmd == "20")
     {
       rotation(IN1_PIN2, IN2_PIN2, PWM_PIN2, 255);
       delay(100);

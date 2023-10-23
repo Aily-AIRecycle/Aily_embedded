@@ -37,7 +37,7 @@ void loop()
     else if (cmd == "0")
     {
       myMotor.rotation(0);
-      Serial.println("Stop");
+      Serial.println("Stop")
     }
   }
 }
